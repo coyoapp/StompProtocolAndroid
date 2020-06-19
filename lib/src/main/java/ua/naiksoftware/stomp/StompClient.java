@@ -121,7 +121,7 @@ public class StompClient {
                                     .subscribe(() -> {
                                         Log.d(TAG, "Publish open");
                                         lifecyclePublishSubject.onNext(lifecycleEvent);
-                                    });
+                                    }, (e) -> Log.e(TAG, e.getLocalizedMessage()));
                             break;
 
                         case CLOSED:
@@ -134,6 +134,9 @@ public class StompClient {
                             lifecyclePublishSubject.onNext(lifecycleEvent);
                             break;
                     }
+                }, e -> {
+                    connectionProvider.disconnect().subscribe();
+                    Log.e(TAG, e.getLocalizedMessage(), e);
                 });
 
         messagesDisposable = connectionProvider.messages()
@@ -143,6 +146,9 @@ public class StompClient {
                 .filter(msg -> msg.getStompCommand().equals(StompCommand.CONNECTED))
                 .subscribe(stompMessage -> {
                     getConnectionStream().onNext(true);
+                }, e -> {
+                    connectionProvider.disconnect().subscribe();
+                    Log.e(TAG, e.getLocalizedMessage(), e);
                 });
     }
 
@@ -241,10 +247,10 @@ public class StompClient {
         else if (!streamMap.containsKey(destPath))
             streamMap.put(destPath,
                     subscribePath(destPath, headerList).andThen(
-                    getMessageStream()
-                            .filter(msg -> pathMatcher.matches(destPath, msg))
-                            .toFlowable(BackpressureStrategy.BUFFER)
-                            .share()).doFinally(() -> unsubscribePath(destPath).subscribe())
+                            getMessageStream()
+                                    .filter(msg -> pathMatcher.matches(destPath, msg))
+                                    .toFlowable(BackpressureStrategy.BUFFER)
+                                    .share()).doFinally(() -> unsubscribePath(destPath).subscribe())
             );
         return streamMap.get(destPath);
     }
@@ -266,6 +272,7 @@ public class StompClient {
         headers.add(new StompHeader(StompHeader.DESTINATION, destinationPath));
         headers.add(new StompHeader(StompHeader.ACK, DEFAULT_ACK));
         if (headerList != null) headers.addAll(headerList);
+        Log.d(TAG, "Subscribing to path: " + destinationPath + " id: " + topicId);
         return send(new StompMessage(StompCommand.SUBSCRIBE,
                 headers, null));
     }

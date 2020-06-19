@@ -130,4 +130,9 @@ public class WebSocketsConnectionProvider extends AbstractConnectionProvider {
     protected Object getSocket() {
         return mWebSocketClient;
     }
+
+    @Override
+    public boolean isConnected() {
+        return haveConnection;
+    }
 }

@@ -2,18 +2,10 @@ package ua.naiksoftware.stomp.provider;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
+import okhttp3.*;
 import okio.ByteString;
 import ua.naiksoftware.stomp.dto.LifecycleEvent;
 
@@ -104,6 +96,11 @@ public class OkHttpConnectionProvider extends AbstractConnectionProvider {
     @Override
     protected Object getSocket() {
         return openSocket;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return openSocket != null;
     }
 
     @NonNull

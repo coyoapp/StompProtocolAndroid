@@ -31,4 +31,11 @@ public interface ConnectionProvider {
      * Automatically emits Lifecycle.CLOSE
      */
     Completable disconnect();
+
+    /**
+     * Tell the user if the connection is established.
+     *
+     * @return true if connected, false otherwise
+     */
+    boolean isConnected();
 }
