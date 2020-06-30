@@ -1,3 +1,7 @@
+### Version 1.8.0
+
+- Breaking API change! The `PathMatcher` API changed to `TopicKey` instead of just the destination path to allow using the headers
+
 ### Version 1.7.0
 
 - Merged `master` from NaikSoftware/StompProtocolAndroid into this  
